@@ -4,26 +4,37 @@
  */
 module.exports = function (hashtags) {
     
-    var uniqueHashes;
-
+    hashtags = hashtags.filter(checkSpases);
+    hashtags = delCommas(hashtags);
     if (hashtags.length == 0)
-        return uniqueHashes;
+      return "";
+    hashtags = delDoubles(hashtags).join(", ");
 
-    hashtags = hashtags.map(checkSpases);
+    function delCommas(hashtags){
+      for(var i = 0; i < hashtags.length; i++)
+        if (hashtags[i][0] === "\'" || hashtags[i][0] === "\"")
+          hashtags[i] = hashtags[i].slice(1, -1);
+      return hashtags;
+    }
 
     function checkSpases(data, index){
-        return (data !== "");
+        return (data !== "" && data !== '');
     }
-    var arrTags = [];
-    var isExist;
-    for (j = 0; j < hashtags.length; j++) {
-      isExist = true;
-        for (i = 0; i < arrTags.length; i++)
-            if (hashtags[j].toLowerCase() === arrTags[i])
-                isExist = false;
-      if(isExist && hashtags[j] !== "")
-          arrTags.push(hashtags[j].toLowerCase());
+
+    function delDoubles(hashtags){
+      var tags = [hashtags[0].toLowerCase()];
+      var check;
+      for(var i = 1; i < hashtags.length; i++){
+        check = true;
+        for (var j = 0; j < tags.length; j++){
+          if (hashtags[i].toLowerCase() === tags[j])
+            check = false;
+        }
+        if (check){
+          tags.push(hashtags[i].toLowerCase());
+        }
+      }
+      return tags;
     }
-    uniqueHashes = arrTags.join(", ");
-    return uniqueHashes;
+    return hashtags;
 };
